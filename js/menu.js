@@ -33,7 +33,7 @@
     ["Pan de jamón","Tarta de espinacas","Brunch dominical","Pescado frito","Hallacas","Arepas","Tortilla"]
   ];
 
-  function render(rows, inv, reheat, deliv) {
+  function render(rows, inv, deliv) {
     var n = window.CLIENT_COL || (C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1);
     if (n < 1) {
       $("client").textContent = "Invalid link";
@@ -59,7 +59,6 @@
     var sections = deliverySections(deliv || [], name);
     if (sections) items = [].concat.apply([], sections.map(function (s) { return s.list; }));
     renderInvoice(inv || [], col);
-    renderReheating(items, reheat || []);
     var row = function (it, n) {
       return '<li><span class="num">' + String(n).padStart(2, "0") + '</span>' +
         '<span class="dish">' + esc(it.text) + '</span>' +
@@ -84,38 +83,6 @@
     if (now - d > 150 * 864e5) d.setFullYear(d.getFullYear() + 1);
     d.setDate(d.getDate() - 1);
     return d.toLocaleString("en-US", { month: "short" }) + " " + String(d.getDate()).padStart(2, "0");
-  }
-
-  // Normaliza un nombre de receta para compararlo: sin número inicial, sin signos, "&" = "and"
-  function norm(s) {
-    return String(s || "").toLowerCase().replace(/^\s*\d+\s+/, "").replace(/&/g, " and ")
-      .replace(/[^a-z0-9]+/g, " ").trim();
-  }
-
-  function renderReheating(items, rows) {
-    var box = $("reheat-dishes");
-    if (!box) return;
-    var recipes = [];
-    rows.forEach(function (r, i) {
-      var name = norm(r[0]), how = (r[1] || "").trim();
-      if (i === 0 || !name || !how) return;
-      recipes.push({ key: name, how: how });
-    });
-    var seen = {}, out = [];
-    items.forEach(function (it) {
-      var k = norm(it.text);
-      if (!k || seen[k]) return;
-      var hit = recipes.filter(function (r) { return r.key === k; })[0] ||
-        recipes.filter(function (r) { return r.key.length >= 12 && (k.indexOf(r.key) === 0 || r.key.indexOf(k) === 0); })[0];
-      if (!hit) return;
-      seen[k] = 1;
-      out.push({ dish: it.text.replace(/^\s*\d+\s+/, ""), how: hit.how });
-    });
-    if (!out.length) { box.hidden = true; return; }
-    box.hidden = false;
-    $("reheat-list").innerHTML = out.map(function (o) {
-      return '<li><span class="r-dish">' + esc(o.dish) + '</span><span class="r-how">' + esc(o.how) + '</span></li>';
-    }).join("");
   }
 
   // Clientes de la pestaña "Freshly Delivered Clients": devuelve [{title, list}] por entrega, o null si el cliente no está.
@@ -240,8 +207,8 @@
     return fetch(bust(u), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(parseCSV);
   };
   var soft = function (u) { return u ? get(u).catch(function () { return []; }) : []; };
-  Promise.all([get(C.sheetCsvUrl), soft(C.invoicesCsvUrl), soft(C.reheatingCsvUrl), soft(C.deliveryCsvUrl)])
-    .then(function (d) { render(d[0], d[1], d[2], d[3]); })
+  Promise.all([get(C.sheetCsvUrl), soft(C.invoicesCsvUrl), soft(C.deliveryCsvUrl)])
+    .then(function (d) { render(d[0], d[1], d[2]); })
     .catch(function () {
       $("menu").innerHTML = '<li class="loading">Couldn\u2019t load the menu. Please try again in a few minutes.</li>';
     });
