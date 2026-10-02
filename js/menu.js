@@ -72,26 +72,32 @@
     var box = $("invoice");
     if (!box) return;
     var cell = function (r) { return ((inv[r - 1] || [])[col] || "").trim(); };
-    var key = function (r) { return ((inv[r - 1] || [])[0] || "").toLowerCase().replace(/[^a-z]/g, ""); };
-    var lines = [], notes = {};
+    var label = function (r) { return ((inv[r - 1] || [])[0] || "").trim(); };
+    var key = function (r) { return label(r).toLowerCase().replace(/[^a-z]/g, ""); };
+    var lines = [], wk = {}, svcWeek = "", invWeek = "";
+    // Encabezado de la factura: "Week of …" y "Week Number" (semana del servicio) arriba de la fila 7
+    for (var h = 1; h < C.invoiceFirstRow; h++) {
+      if (/^weekof/.test(key(h))) invWeek = label(h).replace(/^week of\s*/i, "");
+      if (key(h) === "weeknumber" && cell(h)) svcWeek = cell(h);
+    }
     for (var r = C.invoiceFirstRow; r <= C.invoiceLastRow; r++) {
       var k = key(r), v = cell(r);
       if (!k || !v) continue;
-      if (k === "groceryweeknumber") notes.grocery = v;
-      else if (k === "addons") notes.addons = v;
-      else if (k === "servicefee") lines.push({ label: "Service fee", amt: money(v) });
-      else if (k === "grocerycost") lines.push({ label: "Groceries", note: "", amt: money(v), n: "grocery" });
-      else if (k === "addonscost") lines.push({ label: "Add-ons", amt: money(v), n: "addons" });
-      else if (k !== "total" && money(v) !== null) lines.push({ label: ((inv[r - 1] || [])[0] || "").trim(), amt: money(v) });
+      if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = v;
+      else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = v;
+      else if (k === "servicefee") lines.push({ label: "Service fee", amt: money(v), week: svcWeek });
+      else if (k === "grocerycost") lines.push({ label: "Groceries", amt: money(v), wkKey: "grocery" });
+      else if (k === "addonscost") lines.push({ label: "Add-ons", amt: money(v), wkKey: "addons" });
+      else if (k !== "total" && money(v) !== null) lines.push({ label: label(r), amt: money(v) });
     }
     lines = lines.filter(function (l) { return l.amt !== null; });
     if (!lines.length) { box.hidden = true; return; }
     var total = lines.reduce(function (a, l) { return a + l.amt; }, 0);
     box.hidden = false;
+    $("invoice-week").textContent = invWeek ? "Week of " + invWeek : "";
     $("invoice-lines").innerHTML = lines.map(function (l) {
-      var note = l.n === "grocery" && notes.grocery ? "Week " + notes.grocery
-               : l.n === "addons" && notes.addons ? notes.addons + (notes.addons === "1" ? " item" : " items") : "";
-      return '<li><span class="dish">' + esc(l.label) + (note ? ' <span class="day">' + esc(note) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
+      var w = l.week || (l.wkKey && wk[l.wkKey]) || "";
+      return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
     }).join("");
     $("invoice-total").textContent = usd(total);
   }
