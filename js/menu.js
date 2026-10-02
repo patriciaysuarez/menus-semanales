@@ -48,7 +48,7 @@
 
     $("week").textContent = date ? "Week of " + date : "Menu";
     $("client").textContent = name;
-    document.title = name + " — Menu";
+    document.title = "Menu - " + name;
 
     var items = [];
     for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
