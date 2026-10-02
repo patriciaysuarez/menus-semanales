@@ -47,3 +47,17 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
   .bill .amt { font-size: 20px; white-space: nowrap; }
   .total span { font-size: 28px; }
 }
+.paybox { margin-top: 36px; padding: 24px 24px 20px; background: #fff9ec; border: 1.5px solid var(--olive); border-radius: 4px; box-shadow: 6px 6px 0 var(--lime); }
+.paybox-title { margin: 0 0 6px; font-family: "Instrument Serif", serif; font-style: italic; font-size: 26px; color: var(--red); }
+.pay { list-style: none; margin: 0; padding: 0; }
+.pay li { display: flex; align-items: baseline; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(73,90,24,.25); }
+.pay li:last-child { border-bottom: 0; }
+.pay-name { min-width: 64px; font-size: 13px; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+.pay-handle { flex: 1; font-family: "Instrument Serif", serif; font-size: 28px; line-height: 1.1; letter-spacing: -.01em; }
+.copy { font: inherit; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--olive); background: transparent; border: 1px solid var(--olive); border-radius: 999px; padding: 6px 14px; cursor: pointer; }
+.copy:hover { background: var(--olive); color: var(--cream); }
+.paybox-note { margin: 10px 0 0; font-size: 14px; font-style: italic; opacity: .7; }
+.dl { display: block; width: 100%; margin-top: 36px; padding: 16px 24px; font: inherit; font-size: 18px; color: var(--cream); background: var(--olive); border: 0; border-radius: 999px; cursor: pointer; }
+.dl:hover { background: #3a490f; }
+@media (max-width: 480px) { .pay-handle { font-size: 24px; } .paybox { padding: 20px 18px 16px; box-shadow: 4px 4px 0 var(--lime); } }
+@media print { .dl, .copy { display: none; } .hero { min-height: 0; } }

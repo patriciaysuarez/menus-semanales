@@ -28,8 +28,15 @@
     <h2>Amount due<span class="dot">.</span></h2>
     <ul class="menu bill" id="invoice-lines"></ul>
     <p class="total"><span>Total</span><strong id="invoice-total"></strong></p>
+    <div class="paybox">
+      <p class="paybox-title">How to pay</p>
+      <ul class="pay" id="pay-list"></ul>
+      <p class="paybox-note">Please include your name and the week in the payment note.</p>
+    </div>
+    <button type="button" class="dl" id="download-pdf">Download invoice (PDF)</button>
   </section>
 </main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/menu.js"></script>
 </body>

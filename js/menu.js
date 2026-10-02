@@ -100,7 +100,63 @@
       return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
     }).join("");
     $("invoice-total").textContent = usd(total);
+    window.__invoice = { name: $("client").textContent, week: invWeek, total: total,
+      lines: lines.map(function (l) { return { label: l.label, week: l.week || (l.wkKey && wk[l.wkKey]) || "", amt: l.amt }; }) };
+    renderPayments();
   }
+
+
+  function renderPayments() {
+    var ul = $("pay-list");
+    if (!ul || ul.children.length) return;
+    ul.innerHTML = (C.payments || []).map(function (p, i) {
+      return '<li><span class="pay-name">' + esc(p.name) + '</span><span class="pay-handle">' + esc(p.handle) +
+        '</span><button type="button" class="copy" data-i="' + i + '">Copy</button></li>';
+    }).join("");
+    ul.addEventListener("click", function (e) {
+      var b = e.target.closest(".copy"); if (!b) return;
+      var txt = C.payments[+b.dataset.i].handle;
+      var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, done); else done();
+    });
+  }
+
+  function downloadPdf() {
+    var inv = window.__invoice;
+    if (!inv || !window.jspdf) { window.print(); return; }
+    var doc = new window.jspdf.jsPDF({ unit: "pt", format: "letter" });
+    var W = doc.internal.pageSize.getWidth(), M = 56, y;
+    doc.setFillColor(200, 214, 85); doc.rect(0, 0, W, 150, "F");
+    doc.setTextColor(254, 244, 226);
+    doc.setFont("times", "normal"); doc.setFontSize(13); doc.text("Patricia Ysabella", M, 52);
+    doc.setFont("times", "italic"); doc.setFontSize(15); doc.text(inv.week ? "Week of " + inv.week : "Invoice", M, 100);
+    doc.setFont("times", "normal"); doc.setFontSize(34); doc.text(inv.name, M, 134);
+    doc.setTextColor(73, 90, 24);
+    doc.setFont("times", "normal"); doc.setFontSize(26); doc.text("Invoice", M, 205);
+    doc.setDrawColor(73, 90, 24); doc.setLineWidth(1); doc.line(M, 222, W - M, 222);
+    y = 252;
+    inv.lines.forEach(function (l) {
+      doc.setFont("times", "normal"); doc.setFontSize(14); doc.setTextColor(73, 90, 24);
+      doc.text(l.label, M, y);
+      if (l.week) { doc.setFontSize(10); doc.setTextColor(120, 135, 70); doc.text("WEEK " + l.week, M + 150, y); }
+      doc.setFontSize(14); doc.setTextColor(73, 90, 24); doc.text(usd(l.amt), W - M, y, { align: "right" });
+      doc.setDrawColor(210, 205, 185); doc.setLineWidth(.5); doc.line(M, y + 12, W - M, y + 12);
+      y += 34;
+    });
+    y += 10;
+    doc.setFont("times", "normal"); doc.setFontSize(18); doc.setTextColor(73, 90, 24); doc.text("Total", M, y);
+    doc.setFontSize(26); doc.setTextColor(233, 36, 36); doc.text(usd(inv.total), W - M, y + 2, { align: "right" });
+    y += 56;
+    doc.setFillColor(254, 244, 226); doc.setDrawColor(73, 90, 24); doc.setLineWidth(.8);
+    var pay = C.payments || [], bh = 52 + pay.length * 22;
+    doc.rect(M, y, W - 2 * M, bh, "FD");
+    doc.setFont("times", "italic"); doc.setFontSize(12); doc.setTextColor(233, 36, 36); doc.text("How to pay", M + 16, y + 26);
+    doc.setFont("times", "normal"); doc.setFontSize(13); doc.setTextColor(73, 90, 24);
+    pay.forEach(function (p, i) { doc.text(p.name + ":  " + p.handle, M + 16, y + 50 + i * 22); });
+    var safe = function (s) { return String(s).replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, ""); };
+    doc.save("Invoice-" + safe(inv.name) + (inv.week ? "-" + safe(inv.week) : "") + ".pdf");
+  }
+  document.addEventListener("click", function (e) { if (e.target.closest("#download-pdf")) downloadPdf(); });
 
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 

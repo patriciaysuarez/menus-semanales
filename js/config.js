@@ -10,6 +10,10 @@ window.CONFIG = {
   invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
+  payments: [
+    { name: "Zelle", handle: "786-473-8009" },
+    { name: "Venmo", handle: "patriciasuarez" }
+  ],
   clientCount: 8,
   // Cada cliente entra con su código secreto: ?m=CODIGO  (código 1 = columna B, ... código 8 = columna I)
   tokens: ["i3vayHrn1ZqI", "C4UKXoyeXkQo", "VEy93HQmlLiz", "1MS64NjLcSjL", "2V092uvWD94Y", "72Uqw8djXkSR", "GYqImzXGkC8Y", "OrcPEBlVhz3S"],
