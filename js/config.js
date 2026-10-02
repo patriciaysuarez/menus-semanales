@@ -6,6 +6,10 @@
 //   Solo se usa el bloque de arriba; las semanas anteriores más abajo se ignoran.
 window.CONFIG = {
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=717356759",  // vacío = datos de demostración
+  // Pestaña "Invoices": filas 7 a 13, misma columna que el menú del cliente.
+  invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
+  invoiceFirstRow: 7,
+  invoiceLastRow: 13,
   clientCount: 8,
   // Cada cliente entra con su código secreto: ?m=CODIGO  (código 1 = columna B, ... código 8 = columna I)
   tokens: ["i3vayHrn1ZqI", "C4UKXoyeXkQo", "VEy93HQmlLiz", "1MS64NjLcSjL", "2V092uvWD94Y", "72Uqw8djXkSR", "GYqImzXGkC8Y", "OrcPEBlVhz3S"],

@@ -21,3 +21,11 @@ h2 { margin: 0 0 28px; font-family: "Instrument Serif", Georgia, serif; font-wei
 .day { font-size: 13px; letter-spacing: .12em; text-transform: uppercase; opacity: .7; text-align: right; }
 .menu li.loading { display: block; font-style: italic; opacity: .7; }
 footer { margin-top: 28px; font-size: 14px; opacity: .65; }
+.invoice { margin-top: 56px; }
+.bill .amt { font-size: 22px; }
+.bill .dish { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.bill li { justify-content: space-between; }
+.bill .day { text-align: left; margin-left: 8px; }
+.total { display: flex; justify-content: space-between; align-items: baseline; margin: 22px 0 0; padding-top: 4px; }
+.total span { font-family: "Instrument Serif", serif; font-size: 34px; }
+.total strong { font-family: "Instrument Serif", serif; font-weight: 400; font-size: clamp(44px, 10vw, 64px); color: var(--red); letter-spacing: -.02em; }

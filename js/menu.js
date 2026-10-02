@@ -33,7 +33,7 @@
     ["Pan de jamón","Tarta de espinacas","Brunch dominical","Pescado frito","Hallacas","Arepas","Tortilla"]
   ];
 
-  function render(rows) {
+  function render(rows, inv) {
     var n = C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1;
     if (n < 1) {
       $("client").textContent = "Invalid link";
@@ -55,6 +55,7 @@
       var v = cell(r, col);
       if (v && !/^n\/?a$/i.test(v)) items.push({ i: r - C.firstRecipeRow, text: v, label: cell(r, 0) });
     }
+    renderInvoice(inv || [], col);
     $("menu").innerHTML = items.length ? items.map(function (it, idx) {
       var label = it.label;
       return '<li><span class="num">' + String(idx + 1).padStart(2, "0") + '</span>' +
@@ -63,16 +64,50 @@
     }).join("") : '<li class="loading">This week’s menu isn’t ready yet.</li>';
   }
 
+
+  function money(v) { var n = parseFloat(String(v || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
+  function usd(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+
+  function renderInvoice(inv, col) {
+    var box = $("invoice");
+    if (!box) return;
+    var cell = function (r) { return ((inv[r - 1] || [])[col] || "").trim(); };
+    var key = function (r) { return ((inv[r - 1] || [])[0] || "").toLowerCase().replace(/[^a-z]/g, ""); };
+    var lines = [], notes = {};
+    for (var r = C.invoiceFirstRow; r <= C.invoiceLastRow; r++) {
+      var k = key(r), v = cell(r);
+      if (!k || !v) continue;
+      if (k === "groceryweeknumber") notes.grocery = v;
+      else if (k === "addons") notes.addons = v;
+      else if (k === "servicefee") lines.push({ label: "Service fee", amt: money(v) });
+      else if (k === "grocerycost") lines.push({ label: "Groceries", note: "", amt: money(v), n: "grocery" });
+      else if (k === "addonscost") lines.push({ label: "Add-ons", amt: money(v), n: "addons" });
+      else if (k !== "total" && money(v) !== null) lines.push({ label: ((inv[r - 1] || [])[0] || "").trim(), amt: money(v) });
+    }
+    lines = lines.filter(function (l) { return l.amt !== null; });
+    if (!lines.length) { box.hidden = true; return; }
+    var total = lines.reduce(function (a, l) { return a + l.amt; }, 0);
+    box.hidden = false;
+    $("invoice-lines").innerHTML = lines.map(function (l) {
+      var note = l.n === "grocery" && notes.grocery ? "Week " + notes.grocery
+               : l.n === "addons" && notes.addons ? notes.addons + (notes.addons === "1" ? " item" : " items") : "";
+      return '<li><span class="dish">' + esc(l.label) + (note ? ' <span class="day">' + esc(note) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
+    }).join("");
+    $("invoice-total").textContent = usd(total);
+  }
+
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
   window.MenuLib = { parseCSV: parseCSV };
   if (!$("menu")) return;
-  if (!C.sheetCsvUrl) { render(DEMO); return; }
-  var sep = C.sheetCsvUrl.indexOf("?") > -1 ? "&" : "?";
-  fetch(C.sheetCsvUrl + sep + "t=" + Date.now(), { cache: "no-store" })
-    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
-    .then(function (t) { render(parseCSV(t)); })
+  if (!C.sheetCsvUrl) { render(DEMO, []); return; }
+  var bust = function (u) { return u + (u.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now(); };
+  var get = function (u) {
+    return fetch(bust(u), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(parseCSV);
+  };
+  Promise.all([get(C.sheetCsvUrl), C.invoicesCsvUrl ? get(C.invoicesCsvUrl).catch(function () { return []; }) : []])
+    .then(function (d) { render(d[0], d[1]); })
     .catch(function () {
-      $("menu").innerHTML = '<li class="loading">Couldn’t load the menu. Please try again in a few minutes.</li>';
+      $("menu").innerHTML = '<li class="loading">Couldn\u2019t load the menu. Please try again in a few minutes.</li>';
     });
 })();
