@@ -105,6 +105,11 @@
     return secs.length ? secs : null;
   }
 
+  // Datos de pago del cliente de esta página (o los generales)
+  function payList() {
+    return (C.paymentsByColumn && C.paymentsByColumn[window.CLIENT_COL]) || C.payments || [];
+  }
+
   function money(v) { var n = parseFloat(String(v || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
   function usd(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
@@ -151,13 +156,13 @@
   function renderPayments() {
     var ul = $("pay-list");
     if (!ul || ul.children.length) return;
-    ul.innerHTML = (C.payments || []).map(function (p, i) {
+    ul.innerHTML = (payList() || []).map(function (p, i) {
       return '<li><span class="pay-name">' + esc(p.name) + '</span><span class="pay-handle">' + esc(p.handle) +
         '</span><button type="button" class="copy" data-i="' + i + '">Copy</button></li>';
     }).join("");
     ul.addEventListener("click", function (e) {
       var b = e.target.closest(".copy"); if (!b) return;
-      var txt = C.payments[+b.dataset.i].handle;
+      var txt = payList()[+b.dataset.i].handle;
       var done = function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); };
       if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done, done); else done();
     });
@@ -167,7 +172,7 @@
     var inv = window.__invoice, btn = $("download-pdf");
     if (!inv || !window.jspdf || !window.html2canvas) { window.print(); return; }
     var label = btn.textContent; btn.disabled = true; btn.textContent = "Preparing PDF…";
-    var pay = C.payments || [];
+    var pay = payList() || [];
     var sheet = document.createElement("div");
     sheet.className = "pdf-sheet";
     sheet.innerHTML =

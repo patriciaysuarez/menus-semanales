@@ -18,6 +18,11 @@ window.CONFIG = {
     { name: "Zelle", handle: "786-473-8009" },
     { name: "Venmo", handle: "patriciasuarez" }
   ],
+  // Datos de pago distintos por cliente (clave = columna del Sheet: 2 = Senia & Sean, 7 = Luiza)
+  paymentsByColumn: {
+    2: [{ name: "Zelle", handle: "Sofritoysalsanyc@gmail.com" }, { name: "Venmo", handle: "patriciasuarez" }],
+    7: [{ name: "Zelle", handle: "Sofritoysalsanyc@gmail.com" }, { name: "Venmo", handle: "patriciasuarez" }]
+  },
   clientCount: 8,
   // Cada cliente entra con su código secreto: ?m=CODIGO  (código 1 = columna B, ... código 8 = columna I)
   tokens: ["i3vayHrn1ZqI", "C4UKXoyeXkQo", "VEy93HQmlLiz", "1MS64NjLcSjL", "2V092uvWD94Y", "72Uqw8djXkSR", "GYqImzXGkC8Y", "OrcPEBlVhz3S"],
