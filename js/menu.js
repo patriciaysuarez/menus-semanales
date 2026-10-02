@@ -34,8 +34,8 @@
   ];
 
   function render(rows) {
-    var n = parseInt(new URLSearchParams(location.search).get("c"), 10);
-    if (!(n >= 1 && n <= C.clientCount)) {
+    var n = C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1;
+    if (n < 1) {
       $("client").textContent = "Enlace no válido";
       $("menu").innerHTML = '<li class="loading">Pide a tu chef el enlace de tu menú.</li>';
       return;

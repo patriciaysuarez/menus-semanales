@@ -7,6 +7,8 @@
 window.CONFIG = {
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=717356759",  // vacío = datos de demostración
   clientCount: 8,
+  // Cada cliente entra con su código secreto: ?m=CODIGO  (código 1 = columna B, ... código 8 = columna I)
+  tokens: ["i3vayHrn1ZqI", "C4UKXoyeXkQo", "VEy93HQmlLiz", "1MS64NjLcSjL", "2V092uvWD94Y", "72Uqw8djXkSR", "GYqImzXGkC8Y", "OrcPEBlVhz3S"],
   // Nombres de los clientes. Si la celda de la fila 1 de la columna (B a I)
   // trae un nombre, tiene prioridad sobre esta lista.
   names: ["Cliente 1","Cliente 2","Cliente 3","Cliente 4","Cliente 5","Cliente 6","Cliente 7","Cliente 8"],
