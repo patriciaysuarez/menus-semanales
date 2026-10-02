@@ -8,6 +8,8 @@ window.CONFIG = {
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=717356759",  // vacío = datos de demostración
   // Pestaña "Invoices": filas 7 a 13, misma columna que el menú del cliente.
   invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
+  // Pestaña "master reheating": columna A = receta, columna B = instrucción de recalentado.
+  reheatingCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=114986479",
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
   payments: [
