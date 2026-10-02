@@ -36,9 +36,41 @@
     </div>
     <button type="button" class="dl" id="download-pdf">Download invoice (PDF)</button>
   </section>
-  <section id="reheating" class="reheating" hidden>
+  <section id="reheating" class="reheating">
     <h2>Reheating<span class="dot">.</span></h2>
-    <ul class="reheat" id="reheat-list"></ul>
+    <div id="reheat-dishes" hidden>
+      <p class="sub">Your dishes this week</p>
+      <ul class="reheat" id="reheat-list"></ul>
+    </div>
+    <p class="sub">General guide</p>
+    <div class="acc">
+      <details><summary>Soups</summary><div class="acc-body"><ul>
+        <li><b>Stove:</b> warm over low heat, stirring now and then, until steaming (about 4–8 minutes).</li>
+        <li><b>Microwave:</b> loosely covered, in 1-minute rounds, stirring between each.</li>
+        <li>If it thickened in the fridge, add a splash of water or stock.</li></ul></div></details>
+      <details><summary>Grains</summary><div class="acc-body"><ul>
+        <li>Add a spoonful of water, cover, and microwave 1–2 minutes. Fluff with a fork.</li>
+        <li>Or warm in a skillet over low heat with a little water or oil, covered.</li></ul></div></details>
+      <details><summary>Green salads</summary><div class="acc-body"><ul>
+        <li>Serve cold. Do not heat.</li>
+        <li>Keep dressing separate and toss right before eating so the leaves stay crisp.</li></ul></div></details>
+      <details><summary>Vegetables</summary><div class="acc-body"><ul>
+        <li><b>Oven or toaster oven:</b> 375–400°F for 8–12 minutes for crisp edges.</li>
+        <li><b>Microwave:</b> 45–90 seconds, softer texture.</li></ul></div></details>
+      <details><summary>Meat, poultry &amp; fish</summary><div class="acc-body"><ul>
+        <li><b>Oven:</b> covered, 325–350°F for 10–15 minutes with a splash of sauce or broth to keep it moist.</li>
+        <li><b>Microwave:</b> medium power in short rounds so it does not dry out.</li>
+        <li>Fish: go gentle and short. Warm just until it is no longer cold in the center.</li>
+        <li>Warm sauces separately on the stove and pour over.</li></ul></div></details>
+      <details><summary>Pasta</summary><div class="acc-body"><ul>
+        <li><b>Skillet:</b> medium-low heat with a splash of water or sauce, tossing until hot.</li>
+        <li><b>Microwave:</b> covered, with a spoonful of water, 1–2 minutes, stirring halfway.</li>
+        <li><b>Baked pasta:</b> covered with foil at 350°F for 15–20 minutes.</li></ul></div></details>
+      <details><summary>Desserts</summary><div class="acc-body"><ul>
+        <li>Most are best at room temperature or chilled.</li>
+        <li>Baked goods: 5–8 minutes at 300°F to bring back the softness.</li></ul></div></details>
+    </div>
+    <p class="note-sm">When in doubt, heat until it is hot all the way through.</p>
   </section>
 </main>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

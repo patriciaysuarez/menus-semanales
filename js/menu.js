@@ -93,7 +93,7 @@
   }
 
   function renderReheating(items, rows) {
-    var box = $("reheating");
+    var box = $("reheat-dishes");
     if (!box) return;
     var recipes = [];
     rows.forEach(function (r, i) {
