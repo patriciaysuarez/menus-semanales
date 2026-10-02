@@ -49,3 +49,13 @@ for slug, name, col in CLIENTS:
     os.makedirs(slug, exist_ok=True)
     open(f"{slug}/index.html", "w", encoding="utf-8").write(page)
     print("ok", slug)
+
+# Página raíz (por si alguien comparte un link viejo ?m=...): vista previa genérica
+og_image("default", "Menu")
+root = open("index.html", encoding="utf-8").read()
+if "og:title" not in root:
+    meta = (f'<meta property="og:type" content="website">\n<meta property="og:site_name" content="Patricia Ysabella">\n'
+            f'<meta property="og:title" content="Menu">\n<meta property="og:description" content="Weekly menu">\n'
+            f'<meta property="og:image" content="{BASE}/assets/og/default.png">\n<meta name="twitter:card" content="summary_large_image">\n')
+    root = root.replace("<title>Menu</title>", "<title>Menu</title>\n" + meta.rstrip("\n"))
+    open("index.html", "w", encoding="utf-8").write(root)
