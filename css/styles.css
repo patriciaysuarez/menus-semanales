@@ -69,3 +69,6 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
 .pdf-sheet h1 { font-size: 104px; }
 .pdf-sheet .menu li .dish { font-size: 22px; }
 .pdf-sheet .menu li { flex-wrap: nowrap; }
+.due { margin: -12px 0 24px; font-size: 20px; font-style: italic; color: var(--red); }
+.due:empty { display: none; }
+.deliv { display: block; margin-top: 4px; font-size: 12px; font-style: normal; letter-spacing: .12em; text-transform: uppercase; color: var(--red); }

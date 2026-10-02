@@ -53,17 +53,33 @@
     var items = [];
     for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
       var v = cell(r, col);
-      if (v && !/^n\/?a$/i.test(v)) items.push({ i: r - C.firstRecipeRow, text: v, label: cell(r, 0) });
+      if (v && !/^n\/?a$/i.test(v)) items.push(parseDish(v, r, cell(r, 0)));
     }
     renderInvoice(inv || [], col);
     $("menu").innerHTML = items.length ? items.map(function (it, idx) {
       var label = it.label;
       return '<li><span class="num">' + String(idx + 1).padStart(2, "0") + '</span>' +
-        '<span class="dish">' + esc(it.text) + '</span>' +
+        '<span class="dish">' + esc(it.text) + (it.both ? '<span class="deliv">1st &amp; 2nd delivery</span>' : "") + '</span>' +
         (label ? '<span class="day">' + esc(label) + '</span>' : "") + '</li>';
     }).join("") : '<li class="loading">This week’s menu isn’t ready yet.</li>';
   }
 
+
+  // "2 Moussaka" = el mismo platillo en la 1.ª y en la 2.ª entrega; "1 ..." o sin número = un platillo.
+  function parseDish(v, r, label) {
+    var q = /^\s*([12])\s+(\S.*)$/.exec(v);
+    return { i: r - C.firstRecipeRow, text: q ? q[2].trim() : v, both: !!q && q[1] === "2", label: label };
+  }
+
+  // Fecha límite de pago = el día antes de que empiece la semana ("October 5" -> "Oct 04")
+  function dueDate(weekStr) {
+    if (!weekStr) return "";
+    var now = new Date(), d = new Date(weekStr + " " + now.getFullYear() + " 12:00");
+    if (isNaN(d)) return "";
+    if (now - d > 150 * 864e5) d.setFullYear(d.getFullYear() + 1);
+    d.setDate(d.getDate() - 1);
+    return d.toLocaleString("en-US", { month: "short" }) + " " + String(d.getDate()).padStart(2, "0");
+  }
 
   function money(v) { var n = parseFloat(String(v || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
   function usd(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -94,13 +110,15 @@
     if (!lines.length) { box.hidden = true; return; }
     var total = lines.reduce(function (a, l) { return a + l.amt; }, 0);
     box.hidden = false;
+    var due = dueDate(invWeek);
     $("invoice-week").textContent = invWeek ? "Week of " + invWeek : "";
+    $("invoice-due").textContent = due ? "Payment due " + due : "";
     $("invoice-lines").innerHTML = lines.map(function (l) {
       var w = l.week || (l.wkKey && wk[l.wkKey]) || "";
       return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
     }).join("");
     $("invoice-total").textContent = usd(total);
-    window.__invoice = { name: $("client").textContent, week: invWeek, total: total,
+    window.__invoice = { name: $("client").textContent, week: invWeek, due: due, total: total,
       lines: lines.map(function (l) { return { label: l.label, week: l.week || (l.wkKey && wk[l.wkKey]) || "", amt: l.amt }; }) };
     renderPayments();
   }
@@ -131,7 +149,7 @@
     sheet.innerHTML =
       '<section class="hero"><p class="brand">Patricia Ysabella</p><div class="hero-text">' +
       '<p class="eyebrow">' + (inv.week ? "Week of " + esc(inv.week) : "Invoice") + '</p><h1>' + esc(inv.name) + '</h1></div></section>' +
-      '<div class="paper"><h2>Invoice<span class="dot">.</span></h2><ul class="menu bill">' +
+      '<div class="paper"><h2>Invoice<span class="dot">.</span></h2>' + (inv.due ? '<p class="due">Payment due ' + esc(inv.due) + '</p>' : "") + '<ul class="menu bill">' +
       inv.lines.map(function (l) {
         return '<li><span class="dish">' + esc(l.label) + (l.week ? ' <span class="day">Week ' + esc(l.week) + '</span>' : "") +
           '</span><span class="amt">' + usd(l.amt) + '</span></li>';
