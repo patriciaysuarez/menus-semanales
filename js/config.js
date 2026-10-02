@@ -10,8 +10,10 @@ window.CONFIG = {
   invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
   // Pestaña "master reheating": columna A = receta, columna B = instrucción de recalentado.
   reheatingCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=114986479",
-  // Clientes con dos entregas (columnas del Sheet: 4 = E Tanya, 5 = F Julian). Desactivado: falta definir cómo se reparten los platillos.
-  twoDeliveryColumns: [],
+  // Pestaña "Freshly Delivered Clients": clientes con dos entregas (hoy Tanya y Julian, columnas B y C).
+  // Fila 1 = nombre; la columna A marca "First Delivery" / "Second Delivery" y cada marca vale hasta la siguiente.
+  deliveryCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=499317040",
+  deliveryMaxCol: 3,
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
   payments: [

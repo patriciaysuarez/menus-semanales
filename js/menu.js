@@ -33,7 +33,7 @@
     ["Pan de jamón","Tarta de espinacas","Brunch dominical","Pescado frito","Hallacas","Arepas","Tortilla"]
   ];
 
-  function render(rows, inv, reheat) {
+  function render(rows, inv, reheat, deliv) {
     var n = window.CLIENT_COL || (C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1);
     if (n < 1) {
       $("client").textContent = "Invalid link";
@@ -56,6 +56,8 @@
       var v = cell(r, col);
       if (v && !/^n\/?a$/i.test(v)) items.push({ text: v, label: cell(r, 0) });
     }
+    var sections = deliverySections(deliv || [], name);
+    if (sections) items = [].concat.apply([], sections.map(function (s) { return s.list; }));
     renderInvoice(inv || [], col);
     renderReheating(items, reheat || []);
     var row = function (it, n) {
@@ -65,18 +67,10 @@
     };
     var html;
     if (!items.length) html = '<li class="loading">This week’s menu isn’t ready yet.</li>';
-    else if ((C.twoDeliveryColumns || []).indexOf(col) > -1) {
-      var first = [], second = [];
-      items.forEach(function (it) {
-        var q = /^\s*([12])\s+(\S.*)$/.exec(it.text);
-        var name = q ? q[2].trim() : it.text.trim();
-        first.push({ text: (q ? "1 " : "") + name, label: it.label });
-        if (q && q[1] === "2") second.push({ text: "1 " + name, label: it.label });
-      });
-      var sect = function (title, list) {
-        return list.length ? '<li class="group">' + title + '</li>' + list.map(function (it, i) { return row(it, i + 1); }).join("") : "";
-      };
-      html = sect("First delivery", first) + sect("Second delivery", second);
+    else if (sections) {
+      html = sections.map(function (s) {
+        return s.list.length ? '<li class="group">' + esc(s.title) + '</li>' + s.list.map(function (it, i) { return row(it, i + 1); }).join("") : "";
+      }).join("");
     } else html = items.map(function (it, i) { return row(it, i + 1); }).join("");
     $("menu").innerHTML = html;
   }
@@ -122,6 +116,26 @@
     $("reheat-list").innerHTML = out.map(function (o) {
       return '<li><span class="r-dish">' + esc(o.dish) + '</span><span class="r-how">' + esc(o.how) + '</span></li>';
     }).join("");
+  }
+
+  // Clientes de la pestaña "Freshly Delivered Clients": devuelve [{title, list}] por entrega, o null si el cliente no está.
+  function deliverySections(rows, name) {
+    if (!rows.length || !name) return null;
+    var key = function (s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); };
+    var dc = -1;
+    for (var c = 1; c <= (C.deliveryMaxCol || 3); c++) if (key(rows[0][c]) === key(name)) { dc = c; break; }
+    if (dc < 0) return null;
+    var secs = [], cur = null;
+    for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
+      var a = ((rows[r - 1] || [])[0] || "").trim();
+      if (/\d/.test(a)) break;
+      if (/deliver|entrega/i.test(a)) { cur = { title: /second|segunda|2/i.test(a) ? "Second delivery" : "First delivery", list: [] }; secs.push(cur); }
+      var v = ((rows[r - 1] || [])[dc] || "").trim();
+      if (!v || /^n\/?a$/i.test(v)) continue;
+      if (!cur) { cur = { title: "First delivery", list: [] }; secs.push(cur); }
+      cur.list.push({ text: v, label: "" });
+    }
+    return secs.length ? secs : null;
   }
 
   function money(v) { var n = parseFloat(String(v || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
@@ -226,8 +240,8 @@
     return fetch(bust(u), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(parseCSV);
   };
   var soft = function (u) { return u ? get(u).catch(function () { return []; }) : []; };
-  Promise.all([get(C.sheetCsvUrl), soft(C.invoicesCsvUrl), soft(C.reheatingCsvUrl)])
-    .then(function (d) { render(d[0], d[1], d[2]); })
+  Promise.all([get(C.sheetCsvUrl), soft(C.invoicesCsvUrl), soft(C.reheatingCsvUrl), soft(C.deliveryCsvUrl)])
+    .then(function (d) { render(d[0], d[1], d[2], d[3]); })
     .catch(function () {
       $("menu").innerHTML = '<li class="loading">Couldn\u2019t load the menu. Please try again in a few minutes.</li>';
     });
