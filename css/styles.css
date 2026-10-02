@@ -90,3 +90,4 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
   .pay-name { flex: 1 0 100%; min-width: 0; }
   .pay-handle { flex: 1 1 0; min-width: 0; font-size: 22px; overflow-wrap: anywhere; }
 }
+.acc-body p { margin: 8px 0; }
