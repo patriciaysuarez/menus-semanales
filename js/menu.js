@@ -34,7 +34,7 @@
   ];
 
   function render(rows, inv) {
-    var n = C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1;
+    var n = window.CLIENT_COL || (C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1);
     if (n < 1) {
       $("client").textContent = "Invalid link";
       $("menu").innerHTML = '<li class="loading">Ask your chef for your menu link.</li>';

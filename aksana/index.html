@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Menu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<section class="hero">
+  <p class="brand">Patricia Ysabella</p>
+  <div class="hero-text">
+    <p class="eyebrow" id="week">&nbsp;</p>
+    <h1 id="client">Menu</h1>
+  </div>
+</section>
+<main class="paper">
+  <h2>Menu<span class="dot">.</span></h2>
+  <ol class="menu" id="menu" aria-live="polite">
+    <li class="loading">Loading menu…</li>
+  </ol>
+  <section id="invoice" class="invoice" hidden>
+    <p class="eyebrow-sm" id="invoice-week"></p>
+    <h2>Amount due<span class="dot">.</span></h2>
+    <ul class="menu bill" id="invoice-lines"></ul>
+    <p class="total"><span>Total</span><strong id="invoice-total"></strong></p>
+    <div class="paybox">
+      <p class="paybox-title">How to pay</p>
+      <ul class="pay" id="pay-list"></ul>
+      <p class="paybox-note">Please include your name and the week in the payment note.</p>
+    </div>
+    <button type="button" class="dl" id="download-pdf">Download invoice (PDF)</button>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>window.CLIENT_COL = 6;</script>
+<script src="../js/config.js"></script>
+<script src="../js/menu.js"></script>
+</body>
+</html>
