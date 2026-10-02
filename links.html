@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><title>Enlaces de clientes</title>
+<link rel="stylesheet" href="css/styles.css"></head>
+<body><main class="wrap"><header><p class="eyebrow">Solo para el chef</p><h1>Enlaces</h1></header>
+<ol class="menu" id="list"></ol></main>
+<script src="js/config.js"></script>
+<script>
+  var base = location.href.replace(/links\.html.*$/, "");
+  list.innerHTML = CONFIG.names.map(function (n, i) {
+    var u = base + "?c=" + (i + 1);
+    return '<li><span class="num">' + String(i + 1).padStart(2, "0") + '</span><a class="dish" href="' + u + '">' + n + '</a><span class="day">' + u + '</span></li>';
+  }).join("");
+</script></body></html>
