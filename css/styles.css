@@ -71,6 +71,4 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
 .pdf-sheet .menu li { flex-wrap: nowrap; }
 .due { margin: -12px 0 24px; font-size: 20px; font-style: italic; color: var(--red); }
 .due:empty { display: none; }
-.deliv-old { display: block; margin-top: 4px; font-size: 12px; font-style: normal; letter-spacing: .12em; text-transform: uppercase; color: var(--red); }
-.menu li.group { display: block; padding: 28px 0 10px; border-bottom: 1.5px solid var(--olive); font-family: "Instrument Serif", Georgia, serif; font-size: 30px; line-height: 1; color: var(--olive); }
-.menu li.group:first-child { padding-top: 14px; }
+.deliv-unused { display: block; margin-top: 4px; font-size: 12px; font-style: normal; letter-spacing: .12em; text-transform: uppercase; color: var(--red); }

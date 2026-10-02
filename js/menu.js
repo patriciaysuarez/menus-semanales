@@ -54,7 +54,7 @@
     for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
       if (/\d/.test(cell(r, 0))) break;   // la columna A con fecha ("Sept 28") = empieza la semana anterior
       var v = cell(r, col);
-      if (v && !/^n\/?a$/i.test(v)) items.push(parseDish(v, r, cell(r, 0)));
+      if (v && !/^n\/?a$/i.test(v)) items.push({ text: v, label: cell(r, 0) });
     }
     renderInvoice(inv || [], col);
     var row = function (it, n) {
@@ -62,26 +62,11 @@
         '<span class="dish">' + esc(it.text) + '</span>' +
         (it.label ? '<span class="day">' + esc(it.label) + '</span>' : "") + '</li>';
     };
-    var html;
-    if (!items.length) html = '<li class="loading">This week’s menu isn’t ready yet.</li>';
-    else if (items.some(function (it) { return it.delivery; })) {
-      var groups = [[1, "First delivery"], [2, "Second delivery"], [0, "Extra"]];
-      html = groups.map(function (g) {
-        var list = items.filter(function (it) { return it.delivery === g[0]; });
-        if (!list.length) return "";
-        return '<li class="group">' + g[1] + '</li>' + list.map(function (it, i) { return row(it, i + 1); }).join("");
-      }).join("");
-    } else html = items.map(function (it, i) { return row(it, i + 1); }).join("");
+    var html = items.length ? items.map(function (it, i) { return row(it, i + 1); }).join("")
+      : '<li class="loading">This week’s menu isn’t ready yet.</li>';
     $("menu").innerHTML = html;
   }
 
-
-  // Un número al inicio de la celda ("1 Quinoa…", "2 Moussaka") es la entrega: 1 = First delivery, 2 = Second delivery.
-  // Si el cliente no tiene números, se muestra una sola lista.
-  function parseDish(v, r, label) {
-    var q = /^\s*([12])\s+(\S.*)$/.exec(v);
-    return { i: r - C.firstRecipeRow, text: q ? q[2].trim() : v, delivery: q ? +q[1] : 0, label: label };
-  }
 
   // Fecha límite de pago = el día antes de que empiece la semana ("October 5" -> "Oct 04")
   function dueDate(weekStr) {
