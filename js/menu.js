@@ -36,8 +36,8 @@
   function render(rows) {
     var n = C.tokens.indexOf(new URLSearchParams(location.search).get("m")) + 1;
     if (n < 1) {
-      $("client").textContent = "Enlace no válido";
-      $("menu").innerHTML = '<li class="loading">Pide a tu chef el enlace de tu menú.</li>';
+      $("client").textContent = "Invalid link";
+      $("menu").innerHTML = '<li class="loading">Ask your chef for your menu link.</li>';
       return;
     }
     var col = n;  // cliente N = columna N+1 (B a I); la columna A trae la fecha
@@ -46,9 +46,9 @@
     var date = cell(1, 0);
     var name = cell(1, col) || C.names[n - 1] || "Cliente " + n;
 
-    $("week").textContent = date ? "Semana del " + date : "Menú de la semana";
+    $("week").textContent = date ? "Week of " + date : "Menu";
     $("client").textContent = name;
-    document.title = name + " — Menú de la semana";
+    document.title = name + " — Menu";
 
     var items = [];
     for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
@@ -60,8 +60,7 @@
       return '<li><span class="num">' + String(idx + 1).padStart(2, "0") + '</span>' +
         '<span class="dish">' + esc(it.text) + '</span>' +
         (label ? '<span class="day">' + esc(label) + '</span>' : "") + '</li>';
-    }).join("") : '<li class="loading">El menú de esta semana aún no está listo.</li>';
-    $("updated").textContent = "Actualizado " + new Date().toLocaleString("es", { dateStyle: "medium", timeStyle: "short" });
+    }).join("") : '<li class="loading">This week’s menu isn’t ready yet.</li>';
   }
 
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
@@ -74,6 +73,6 @@
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then(function (t) { render(parseCSV(t)); })
     .catch(function () {
-      $("menu").innerHTML = '<li class="loading">No se pudo cargar el menú. Intenta de nuevo en unos minutos.</li>';
+      $("menu").innerHTML = '<li class="loading">Couldn’t load the menu. Please try again in a few minutes.</li>';
     });
 })();
