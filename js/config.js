@@ -10,9 +10,8 @@ window.CONFIG = {
   invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
   // Pestaña "master reheating": columna A = receta, columna B = instrucción de recalentado.
   reheatingCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=114986479",
-  // Clientes con dos entregas (columna del Sheet: 4 = E Tanya, 5 = F Julian).
-  // "2 Platillo" = 1 en la primera entrega + 1 (el mismo) en la segunda; "1 Platillo" o sin número = primera entrega.
-  twoDeliveryColumns: [4, 5],
+  // Clientes con dos entregas (columnas del Sheet: 4 = E Tanya, 5 = F Julian). Desactivado: falta definir cómo se reparten los platillos.
+  twoDeliveryColumns: [],
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
   payments: [
