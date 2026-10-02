@@ -3,12 +3,19 @@
 <meta name="robots" content="noindex"><title>Enlaces de clientes</title>
 <link rel="stylesheet" href="css/styles.css"></head>
 <body><main class="wrap"><header><p class="eyebrow">Solo para el chef</p><h1>Enlaces</h1></header>
-<ol class="menu" id="list"></ol></main>
+<ol class="menu" id="list-el"></ol></main>
 <script src="js/config.js"></script>
+<script src="js/menu.js"></script>
 <script>
   var base = location.href.replace(/links\.html.*$/, "");
-  list.innerHTML = CONFIG.names.map(function (n, i) {
-    var u = base + "?c=" + (i + 1);
-    return '<li><span class="num">' + String(i + 1).padStart(2, "0") + '</span><a class="dish" href="' + u + '">' + n + '</a><span class="day">' + u + '</span></li>';
-  }).join("");
+  fetch(CONFIG.sheetCsvUrl, { cache: "no-store" }).then(function (r) { return r.text(); }).then(function (t) {
+    var head = MenuLib.parseCSV(t)[0] || [], out = "";
+    for (var i = 1; i <= CONFIG.clientCount; i++) {
+      var n = (head[i] || "").trim();
+      if (!n) continue;
+      var u = base + "?c=" + i;
+      out += '<li><span class="num">' + String(i).padStart(2, "0") + '</span><a class="dish" href="' + u + '">' + n + '</a><span class="day">' + u + '</span></li>';
+    }
+    document.getElementById("list-el").innerHTML = out || '<li class="loading">Sin clientes en la fila 1.</li>';
+  });
 </script></body></html>

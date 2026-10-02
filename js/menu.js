@@ -53,11 +53,11 @@
     var items = [];
     for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
       var v = cell(r, col);
-      if (v) items.push({ i: r - C.firstRecipeRow, text: v });
+      if (v && !/^n\/?a$/i.test(v)) items.push({ i: r - C.firstRecipeRow, text: v, label: cell(r, 0) });
     }
-    $("menu").innerHTML = items.length ? items.map(function (it) {
-      var label = (C.dayLabels && C.dayLabels[it.i]) || "";
-      return '<li><span class="num">' + String(it.i + 1).padStart(2, "0") + '</span>' +
+    $("menu").innerHTML = items.length ? items.map(function (it, idx) {
+      var label = it.label;
+      return '<li><span class="num">' + String(idx + 1).padStart(2, "0") + '</span>' +
         '<span class="dish">' + esc(it.text) + '</span>' +
         (label ? '<span class="day">' + esc(label) + '</span>' : "") + '</li>';
     }).join("") : '<li class="loading">El menú de esta semana aún no está listo.</li>';
@@ -66,6 +66,8 @@
 
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
+  window.MenuLib = { parseCSV: parseCSV };
+  if (!$("menu")) return;
   if (!C.sheetCsvUrl) { render(DEMO); return; }
   var sep = C.sheetCsvUrl.indexOf("?") > -1 ? "&" : "?";
   fetch(C.sheetCsvUrl + sep + "t=" + Date.now(), { cache: "no-store" })
