@@ -40,11 +40,11 @@
       $("menu").innerHTML = '<li class="loading">Pide a tu chef el enlace de tu menú.</li>';
       return;
     }
-    var col = n - 1;
+    var col = n;  // cliente N = columna N+1 (B a I); la columna A trae la fecha
     var cell = function (r, c) { return ((rows[r - 1] || [])[c] || "").trim(); };
 
     var date = cell(1, 0);
-    var name = (col > 0 && cell(1, col)) || C.names[col] || "Cliente " + n;
+    var name = cell(1, col) || C.names[n - 1] || "Cliente " + n;
 
     $("week").textContent = date ? "Semana del " + date : "Menú de la semana";
     $("client").textContent = name;
