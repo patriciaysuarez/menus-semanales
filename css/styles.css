@@ -78,3 +78,5 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
 .r-dish { display: block; font-size: 22px; line-height: 1.3; }
 .r-how { display: block; margin-top: 4px; font-style: italic; opacity: .85; }
 @media print { .reheating { break-inside: avoid; } }
+.menu li.group { display: block; padding: 28px 0 10px; border-bottom: 1.5px solid var(--olive); font-family: "Instrument Serif", Georgia, serif; font-size: 30px; line-height: 1; color: var(--olive); }
+.menu li.group:first-child { padding-top: 14px; }

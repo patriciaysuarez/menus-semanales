@@ -63,8 +63,21 @@
         '<span class="dish">' + esc(it.text) + '</span>' +
         (it.label ? '<span class="day">' + esc(it.label) + '</span>' : "") + '</li>';
     };
-    var html = items.length ? items.map(function (it, i) { return row(it, i + 1); }).join("")
-      : '<li class="loading">This week’s menu isn’t ready yet.</li>';
+    var html;
+    if (!items.length) html = '<li class="loading">This week’s menu isn’t ready yet.</li>';
+    else if ((C.twoDeliveryColumns || []).indexOf(col) > -1) {
+      var first = [], second = [];
+      items.forEach(function (it) {
+        var q = /^\s*([12])\s+(\S.*)$/.exec(it.text);
+        var name = q ? q[2].trim() : it.text.trim();
+        first.push({ text: (q ? "1 " : "") + name, label: it.label });
+        if (q && q[1] === "2") second.push({ text: "1 " + name, label: it.label });
+      });
+      var sect = function (title, list) {
+        return list.length ? '<li class="group">' + title + '</li>' + list.map(function (it, i) { return row(it, i + 1); }).join("") : "";
+      };
+      html = sect("First delivery", first) + sect("Second delivery", second);
+    } else html = items.map(function (it, i) { return row(it, i + 1); }).join("");
     $("menu").innerHTML = html;
   }
 
