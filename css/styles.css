@@ -61,3 +61,11 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
 .dl:hover { background: #3a490f; }
 @media (max-width: 480px) { .pay-handle { font-size: 24px; } .paybox { padding: 20px 18px 16px; box-shadow: 4px 4px 0 var(--lime); } }
 @media print { .dl, .copy { display: none; } .hero { min-height: 0; } }
+
+.pdf-sheet { position: fixed; left: -10000px; top: 0; width: 816px; background: var(--cream); }
+.pdf-sheet .hero { min-height: 300px; padding: 36px 56px 56px; }
+.pdf-sheet .paper { max-width: none; padding: 48px 56px 56px; }
+.pdf-sheet .hero-text { padding-top: 24px; }
+.pdf-sheet h1 { font-size: 104px; }
+.pdf-sheet .menu li .dish { font-size: 22px; }
+.pdf-sheet .menu li { flex-wrap: nowrap; }
