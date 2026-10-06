@@ -12,6 +12,10 @@ window.CONFIG = {
   // Fila 1 = nombre; la columna A marca "First Delivery" / "Second Delivery" y cada marca vale hasta la siguiente.
   deliveryCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=499317040",
   deliveryMaxCol: 3,
+  // Estado de pago: en la pestaña "Invoices", una fila con "Paid" en la columna A y una casilla marcada
+  // (o "Yes") en la columna del cliente. Solo mientras esa fila NO exista en la hoja se usa esta lista
+  // temporal (columnas del menú: 1 = Mia, 4 = Tanya, 6 = Aksana).
+  paidFallbackColumns: [1, 4, 6],
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
   payments: [

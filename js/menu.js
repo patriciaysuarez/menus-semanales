@@ -119,7 +119,7 @@
     var cell = function (r) { return ((inv[r - 1] || [])[col] || "").trim(); };
     var label = function (r) { return ((inv[r - 1] || [])[0] || "").trim(); };
     var key = function (r) { return label(r).toLowerCase().replace(/[^a-z]/g, ""); };
-    var lines = [], wk = {}, svcWeek = "", invWeek = "";
+    var lines = [], wk = {}, svcWeek = "", invWeek = "", paidRow = false, paidVal = "";
     // Encabezado de la factura: "Week of …" y "Week Number" (semana del servicio) arriba de la fila 7
     for (var h = 1; h < C.invoiceFirstRow; h++) {
       if (/^weekof/.test(key(h))) invWeek = label(h).replace(/^week of\s*/i, "");
@@ -127,6 +127,7 @@
     }
     for (var r = C.invoiceFirstRow; r <= C.invoiceLastRow; r++) {
       var k = key(r), v = cell(r);
+      if (/^(amount)?paid(status)?$/.test(k)) { paidRow = true; paidVal = v; continue; }
       if (!k || !v) continue;
       if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = v;
       else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = v;
@@ -139,15 +140,20 @@
     if (!lines.length) { box.hidden = true; return; }
     var total = lines.reduce(function (a, l) { return a + l.amt; }, 0);
     box.hidden = false;
+    var paid = paidRow ? !!paidVal && !/^(false|no|n|0|unpaid|-)$/i.test(paidVal)
+                       : (C.paidFallbackColumns || []).indexOf(col) > -1;
     var due = dueDate(invWeek);
     $("invoice-week").textContent = invWeek ? "Week of " + invWeek : "";
-    $("invoice-due").textContent = due ? "Payment due " + due : "";
+    $("invoice-due").textContent = paid ? "Payment received" : (due ? "Payment due " + due : "");
+    $("invoice-title").textContent = paid ? "Amount paid" : "Amount due";
+    $("total-label").textContent = paid ? "Total paid" : "Total";
+    if ($("paybox")) $("paybox").hidden = paid;
     $("invoice-lines").innerHTML = lines.map(function (l) {
       var w = l.week || (l.wkKey && wk[l.wkKey]) || "";
       return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
     }).join("");
     $("invoice-total").textContent = usd(total);
-    window.__invoice = { name: $("client").textContent, week: invWeek, due: due, total: total,
+    window.__invoice = { name: $("client").textContent, week: invWeek, due: due, paid: paid, total: total,
       lines: lines.map(function (l) { return { label: l.label, week: l.week || (l.wkKey && wk[l.wkKey]) || "", amt: l.amt }; }) };
     renderPayments();
   }
@@ -178,14 +184,14 @@
     sheet.innerHTML =
       '<section class="hero"><p class="brand">Patricia Ysabella</p><div class="hero-text">' +
       '<p class="eyebrow">' + (inv.week ? "Week of " + esc(inv.week) : "Invoice") + '</p><h1>' + esc(inv.name) + '</h1></div></section>' +
-      '<div class="paper"><h2>Invoice<span class="dot">.</span></h2>' + (inv.due ? '<p class="due">Payment due ' + esc(inv.due) + '</p>' : "") + '<ul class="menu bill">' +
+      '<div class="paper"><h2>' + (inv.paid ? "Receipt" : "Invoice") + '<span class="dot">.</span></h2>' + (inv.paid ? '<p class="due">Payment received</p>' : inv.due ? '<p class="due">Payment due ' + esc(inv.due) + '</p>' : "") + '<ul class="menu bill">' +
       inv.lines.map(function (l) {
         return '<li><span class="dish">' + esc(l.label) + (l.week ? ' <span class="day">Week ' + esc(l.week) + '</span>' : "") +
           '</span><span class="amt">' + usd(l.amt) + '</span></li>';
-      }).join("") + '</ul><p class="total"><span>Total</span><strong>' + usd(inv.total) + '</strong></p>' +
-      '<div class="paybox"><p class="paybox-title">How to pay</p><ul class="pay">' +
+      }).join("") + '</ul><p class="total"><span>' + (inv.paid ? "Total paid" : "Total") + '</span><strong>' + usd(inv.total) + '</strong></p>' +
+      (inv.paid ? "" : '<div class="paybox"><p class="paybox-title">How to pay</p><ul class="pay">' +
       pay.map(function (p) { return '<li><span class="pay-name">' + esc(p.name) + '</span><span class="pay-handle">' + esc(p.handle) + '</span></li>'; }).join("") +
-      '</ul><p class="paybox-note">Please include your name and the week in the payment note.</p></div></div>';
+      '</ul><p class="paybox-note">Please include your name and the week in the payment note.</p></div>') + '</div>';
     document.body.appendChild(sheet);
     var safe = function (s) { return String(s).replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, ""); };
     var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
@@ -195,7 +201,7 @@
         var doc = new window.jspdf.jsPDF({ unit: "pt", format: [W, H], orientation: "portrait" });
         doc.setFillColor(254, 244, 226); doc.rect(0, 0, W, H, "F");
         doc.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, W, W * canvas.height / canvas.width);
-        doc.save("Invoice-" + safe(inv.name) + (inv.week ? "-" + safe(inv.week) : "") + ".pdf");
+        doc.save((inv.paid ? "Receipt-" : "Invoice-") + safe(inv.name) + (inv.week ? "-" + safe(inv.week) : "") + ".pdf");
       })
       .catch(function () { window.print(); })
       .then(function () { sheet.remove(); btn.disabled = false; btn.textContent = label; });
@@ -204,7 +210,7 @@
 
   function esc(s) { var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
 
-  window.MenuLib = { parseCSV: parseCSV };
+  window.MenuLib = { parseCSV: parseCSV, renderInvoice: renderInvoice };
   if (!$("menu")) return;
   if (!C.sheetCsvUrl) { render(DEMO, []); return; }
   var bust = function (u) { return u + (u.indexOf("?") > -1 ? "&" : "?") + "t=" + Date.now(); };
