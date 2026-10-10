@@ -110,6 +110,9 @@
     return (C.paymentsByColumn && C.paymentsByColumn[window.CLIENT_COL]) || C.payments || [];
   }
 
+  // "$1.00" / "4.0" -> "1" / "4" (la celda de semana a veces tiene formato de moneda)
+  function weekNum(v) { return String(v || "").trim().replace(/^\$/, "").replace(/\.0+$/, ""); }
+
   function money(v) { var n = parseFloat(String(v || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
   function usd(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
 
@@ -123,14 +126,14 @@
     // Encabezado de la factura: "Week of …" y "Week Number" (semana del servicio) arriba de la fila 7
     for (var h = 1; h < C.invoiceFirstRow; h++) {
       if (/^weekof/.test(key(h))) invWeek = label(h).replace(/^week of\s*/i, "");
-      if (key(h) === "weeknumber" && cell(h)) svcWeek = cell(h);
+      if (key(h) === "weeknumber" && cell(h)) svcWeek = weekNum(cell(h));
     }
     for (var r = C.invoiceFirstRow; r <= C.invoiceLastRow; r++) {
       var k = key(r), v = cell(r);
-      if (/^(amount)?paid(status)?$/.test(k)) { paidRow = true; paidVal = v; continue; }
+      if (/^(amount)?paid(button|status|\?)?$/.test(k)) { paidRow = true; paidVal = v; continue; }
       if (!k || !v) continue;
-      if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = v;
-      else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = v;
+      if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = weekNum(v);
+      else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = weekNum(v);
       else if (k === "servicefee") lines.push({ label: "Service fee", amt: money(v), week: svcWeek });
       else if (k === "grocerycost") lines.push({ label: "Groceries", amt: money(v), wkKey: "grocery" });
       else if (k === "addonscost") lines.push({ label: "Add-ons", amt: money(v), wkKey: "addons" });
@@ -140,8 +143,7 @@
     if (!lines.length) { box.hidden = true; return; }
     var total = lines.reduce(function (a, l) { return a + l.amt; }, 0);
     box.hidden = false;
-    var paid = paidRow ? !!paidVal && !/^(false|no|n|0|unpaid|-)$/i.test(paidVal)
-                       : (C.paidFallbackColumns || []).indexOf(col) > -1;
+    var paid = paidRow && !!paidVal && !/^(false|no|n|0|unpaid|-)$/i.test(paidVal);
     var due = dueDate(invWeek);
     $("invoice-week").textContent = invWeek ? "Week of " + invWeek : "";
     $("invoice-due").textContent = paid ? "Payment received" : (due ? "Payment due " + due : "");
