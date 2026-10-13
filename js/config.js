@@ -8,9 +8,13 @@ window.CONFIG = {
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=717356759",  // vacío = datos de demostración
   // Pestaña "Invoices": filas 7 a 13, misma columna que el menú del cliente.
   invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
-  // Pestaña "Freshly Delivered Clients": clientes con dos entregas (hoy Tanya y Julian, columnas B y C).
-  // Fila 1 = nombre; la columna A marca "First Delivery" / "Second Delivery" y cada marca vale hasta la siguiente.
-  deliveryCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=499317040",
+  // Pestañas de clientes con entregas: "Freshly Delivered Clients" y "Perfectly Portioned Clients".
+  // Fila 1 = nombre (columnas B a D); la columna A marca "First Delivery" / "Second Delivery" y cada marca vale hasta la siguiente.
+  // Un cliente cuyo nombre aparezca en la fila 1 de alguna de estas pestañas toma su menú de ahí.
+  deliveryCsvUrls: [
+    "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=499317040",
+    "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1949387662"
+  ],
   deliveryMaxCol: 3,
   // Estado de pago: en la pestaña "Invoices", la fila "Paid button" (una casilla por cliente, misma columna que su menú).
   // Casilla marcada (TRUE) = "Amount paid"; desmarcada (FALSE) o sin casilla = "Amount due".

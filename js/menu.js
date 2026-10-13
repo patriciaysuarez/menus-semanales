@@ -52,7 +52,7 @@
 
     var items = [];
     for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
-      if (/\d/.test(cell(r, 0))) break;   // la columna A con fecha ("Sept 28") = empieza la semana anterior
+      if (/\d/.test(cell(r, 0)) || /chef\s*notes/i.test(cell(r, 0))) break;   // fecha ("Sept 28") = semana anterior; "Chef Notes" = fin del menú
       var v = cell(r, col);
       if (v && !/^n\/?a$/i.test(v)) items.push({ text: v, label: cell(r, 0) });
     }
@@ -85,24 +85,33 @@
     return d.toLocaleString("en-US", { month: "short" }) + " " + String(d.getDate()).padStart(2, "0");
   }
 
-  // Clientes de la pestaña "Freshly Delivered Clients": devuelve [{title, list}] por entrega, o null si el cliente no está.
-  function deliverySections(rows, name) {
-    if (!rows.length || !name) return null;
+  // Clientes con entregas (pestañas "Freshly Delivered Clients", "Perfectly Portioned Clients"):
+  // devuelve [{title, list}] por entrega, o null si el cliente no aparece en ninguna.
+  function deliverySections(tabs, name) {
+    if (!name) return null;
     var key = function (s) { return String(s || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim(); };
-    var dc = -1;
-    for (var c = 1; c <= (C.deliveryMaxCol || 3); c++) if (key(rows[0][c]) === key(name)) { dc = c; break; }
-    if (dc < 0) return null;
-    var secs = [], cur = null;
-    for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
-      var a = ((rows[r - 1] || [])[0] || "").trim();
-      if (/\d/.test(a)) break;
-      if (/deliver|entrega/i.test(a)) { cur = { title: /second|segunda|2/i.test(a) ? "Second delivery" : "First delivery", list: [] }; secs.push(cur); }
-      var v = ((rows[r - 1] || [])[dc] || "").trim();
-      if (!v || /^n\/?a$/i.test(v)) continue;
-      if (!cur) { cur = { title: "First delivery", list: [] }; secs.push(cur); }
-      cur.list.push({ text: v, label: "" });
+    for (var t = 0; t < (tabs || []).length; t++) {
+      var rows = tabs[t] || [];
+      if (!rows.length) continue;
+      var dc = -1;
+      for (var c = 1; c <= (C.deliveryMaxCol || 3); c++) if (key(rows[0][c]) === key(name)) { dc = c; break; }
+      if (dc < 0) continue;
+      var secs = [], cur = null;
+      for (var r = C.firstRecipeRow; r <= C.lastRecipeRow; r++) {
+        var a = ((rows[r - 1] || [])[0] || "").trim();
+        if (/\d/.test(a) || /chef\s*notes/i.test(a)) break;
+        if (/deliver|entrega/i.test(a)) {
+          var title = a.replace(/\s+/g, " ").toLowerCase();
+          cur = { title: title.charAt(0).toUpperCase() + title.slice(1), list: [] }; secs.push(cur);
+        }
+        var v = ((rows[r - 1] || [])[dc] || "").trim();
+        if (!v || /^n\/?a$/i.test(v)) continue;
+        if (!cur) { cur = { title: "First delivery", list: [] }; secs.push(cur); }
+        cur.list.push({ text: v, label: "" });
+      }
+      if (secs.length) return secs;
     }
-    return secs.length ? secs : null;
+    return null;
   }
 
   // Datos de pago del cliente de esta página (o los generales)
@@ -220,7 +229,7 @@
     return fetch(bust(u), { cache: "no-store" }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(parseCSV);
   };
   var soft = function (u) { return u ? get(u).catch(function () { return []; }) : []; };
-  Promise.all([get(C.sheetCsvUrl), soft(C.invoicesCsvUrl), soft(C.deliveryCsvUrl)])
+  Promise.all([get(C.sheetCsvUrl), soft(C.invoicesCsvUrl), Promise.all((C.deliveryCsvUrls || []).map(soft))])
     .then(function (d) { render(d[0], d[1], d[2]); })
     .catch(function () {
       $("menu").innerHTML = '<li class="loading">Couldn\u2019t load the menu. Please try again in a few minutes.</li>';
