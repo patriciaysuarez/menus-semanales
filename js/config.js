@@ -18,6 +18,8 @@ window.CONFIG = {
   deliveryMaxCol: 3,
   // Estado de pago: en la pestaña "Invoices", la fila "Paid button" (una casilla por cliente, misma columna que su menú).
   // Casilla marcada (TRUE) = "Amount paid"; desmarcada (FALSE) o sin casilla = "Amount due".
+  // Fecha límite: fila "Due Date" de la pestaña "Invoices" (una por cliente). Si la celda está vacía,
+  // se usa el día antes de que empiece la semana.
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
   payments: [

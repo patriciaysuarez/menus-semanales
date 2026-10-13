@@ -75,6 +75,23 @@
   }
 
 
+  // Fecha escrita en la hoja ("10/13/26", "Oct 13", "October 13") -> "Oct 13"; "" si no se entiende
+  function formatDue(v) {
+    v = String(v || "").trim();
+    if (!v) return "";
+    var mons = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"], mo, da;
+    var s = /^(\d{1,2})\/(\d{1,2})(?:\/\d{2,4})?$/.exec(v);
+    if (s) { mo = +s[1]; da = +s[2]; }
+    else {
+      var t = /^([A-Za-z]{3,9})\.?\s+(\d{1,2})(?:,?\s*\d{4})?$/.exec(v);
+      var idx = t ? mons.map(function (x) { return x.toLowerCase(); }).indexOf(t[1].slice(0, 3).toLowerCase()) : -1;
+      if (idx < 0) return v;   // texto libre ("On delivery"): se muestra tal cual
+      mo = idx + 1; da = +t[2];
+    }
+    if (mo < 1 || mo > 12 || da < 1 || da > 31) return v;
+    return mons[mo - 1] + " " + String(da).padStart(2, "0");
+  }
+
   // Fecha límite de pago = el día antes de que empiece la semana ("October 5" -> "Oct 04")
   function dueDate(weekStr) {
     if (!weekStr) return "";
@@ -131,7 +148,7 @@
     var cell = function (r) { return ((inv[r - 1] || [])[col] || "").trim(); };
     var label = function (r) { return ((inv[r - 1] || [])[0] || "").trim(); };
     var key = function (r) { return label(r).toLowerCase().replace(/[^a-z]/g, ""); };
-    var lines = [], wk = {}, svcWeek = "", invWeek = "", paidRow = false, paidVal = "";
+    var lines = [], wk = {}, svcWeek = "", invWeek = "", paidRow = false, paidVal = "", dueVal = "";
     // Encabezado de la factura: "Week of …" y "Week Number" (semana del servicio) arriba de la fila 7
     for (var h = 1; h < C.invoiceFirstRow; h++) {
       if (/^weekof/.test(key(h))) invWeek = label(h).replace(/^week of\s*/i, "");
@@ -140,6 +157,7 @@
     for (var r = C.invoiceFirstRow; r <= C.invoiceLastRow; r++) {
       var k = key(r), v = cell(r);
       if (/^(amount)?paid(button|status|\?)?$/.test(k)) { paidRow = true; paidVal = v; continue; }
+      if (/^(payment)?due(date)?$/.test(k)) { dueVal = v; continue; }
       if (!k || !v) continue;
       if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = weekNum(v);
       else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = weekNum(v);
@@ -153,9 +171,9 @@
     var total = lines.reduce(function (a, l) { return a + l.amt; }, 0);
     box.hidden = false;
     var paid = paidRow && !!paidVal && !/^(false|no|n|0|unpaid|-)$/i.test(paidVal);
-    var due = dueDate(invWeek);
+    var due = formatDue(dueVal) || dueDate(invWeek);   // la fecha de la hoja manda; si no hay, el día antes de la semana
     $("invoice-week").textContent = invWeek ? "Week of " + invWeek : "";
-    $("invoice-due").textContent = paid ? "Payment received" : (due ? "Payment due " + due : "");
+    $("invoice-due").textContent = paid ? "Payment received" : (due ? (/^(payment\s+)?due/i.test(due) ? due : "Payment due " + due) : "");
     $("invoice-title").textContent = paid ? "Amount paid" : "Amount due";
     $("total-label").textContent = paid ? "Total paid" : "Total";
     if ($("paybox")) $("paybox").hidden = paid;
