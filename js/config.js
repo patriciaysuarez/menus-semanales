@@ -20,6 +20,10 @@ window.CONFIG = {
   // Casilla marcada (TRUE) = "Amount paid"; desmarcada (FALSE) o sin casilla = "Amount due".
   // Fecha límite: fila "Due Date" de la pestaña "Invoices" (una por cliente). Si la celda está vacía,
   // se usa el día antes de que empiece la semana.
+  // Desglose bajo "Service fee" por cliente (clave = columna del Sheet: 8 = Madeline).
+  serviceNotes: {
+    8: "Five to six portioned meals, delivered once a week."
+  },
   invoiceFirstRow: 7,
   invoiceLastRow: 13,
   payments: [

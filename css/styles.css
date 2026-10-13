@@ -91,3 +91,5 @@ footer { margin-top: 28px; font-size: 14px; opacity: .65; }
   .pay-handle { flex: 1 1 0; min-width: 0; font-size: 22px; overflow-wrap: anywhere; }
 }
 .acc-body p { margin: 8px 0; }
+.bill .dish { flex-wrap: wrap; }
+.svc-note { flex: 0 0 100%; margin-top: 4px; font-size: 16px; font-style: italic; line-height: 1.35; opacity: .8; }

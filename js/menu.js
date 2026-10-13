@@ -161,7 +161,7 @@
       if (!k || !v) continue;
       if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = weekNum(v);
       else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = weekNum(v);
-      else if (k === "servicefee") lines.push({ label: "Service fee", amt: money(v), week: svcWeek });
+      else if (k === "servicefee") lines.push({ label: "Service fee", amt: money(v), week: svcWeek, note: (C.serviceNotes || {})[col] || "" });
       else if (k === "grocerycost") lines.push({ label: "Groceries", amt: money(v), wkKey: "grocery" });
       else if (k === "addonscost") lines.push({ label: "Add-ons", amt: money(v), wkKey: "addons" });
       else if (k !== "total" && money(v) !== null) lines.push({ label: label(r), amt: money(v) });
@@ -179,11 +179,11 @@
     if ($("paybox")) $("paybox").hidden = paid;
     $("invoice-lines").innerHTML = lines.map(function (l) {
       var w = l.week || (l.wkKey && wk[l.wkKey]) || "";
-      return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
+      return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + (l.note ? '<span class="svc-note">' + esc(l.note) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
     }).join("");
     $("invoice-total").textContent = usd(total);
     window.__invoice = { name: $("client").textContent, week: invWeek, due: due, paid: paid, total: total,
-      lines: lines.map(function (l) { return { label: l.label, week: l.week || (l.wkKey && wk[l.wkKey]) || "", amt: l.amt }; }) };
+      lines: lines.map(function (l) { return { label: l.label, note: l.note || "", week: l.week || (l.wkKey && wk[l.wkKey]) || "", amt: l.amt }; }) };
     renderPayments();
   }
 
@@ -216,6 +216,7 @@
       '<div class="paper"><h2>' + (inv.paid ? "Receipt" : "Invoice") + '<span class="dot">.</span></h2>' + (inv.paid ? '<p class="due">Payment received</p>' : inv.due ? '<p class="due">Payment due ' + esc(inv.due) + '</p>' : "") + '<ul class="menu bill">' +
       inv.lines.map(function (l) {
         return '<li><span class="dish">' + esc(l.label) + (l.week ? ' <span class="day">Week ' + esc(l.week) + '</span>' : "") +
+          (l.note ? '<span class="svc-note">' + esc(l.note) + '</span>' : "") +
           '</span><span class="amt">' + usd(l.amt) + '</span></li>';
       }).join("") + '</ul><p class="total"><span>' + (inv.paid ? "Total paid" : "Total") + '</span><strong>' + usd(inv.total) + '</strong></p>' +
       (inv.paid ? "" : '<div class="paybox"><p class="paybox-title">How to pay</p><ul class="pay">' +
