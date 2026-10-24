@@ -29,6 +29,8 @@ def og_image(slug, name):
     img.save(f"assets/og/{slug}.png", optimize=True)
 
 src = open("index.html", encoding="utf-8").read()
+# la plantilla (index.html) ya trae la vista previa genérica: se quita para que cada página de cliente tenga solo la suya
+src = "\n".join(l for l in src.split("\n") if not (l.startswith("<meta property=\"og:") or l.startswith("<meta name=\"twitter:")))
 for slug, name, col in CLIENTS:
     og_image(slug, name)
     title = html.escape(f"Menu - {name}")
