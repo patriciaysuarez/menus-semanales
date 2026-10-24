@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw, ImageFont
 BASE = "https://patriciaysuarez.github.io/menus-semanales"
 # (carpeta, nombre visible, columna del Sheet: 1 = B, 2 = C, ...)
 CLIENTS = [("mia", "Mia", 1), ("senia-sean", "Senia & Sean", 2), ("brittany", "Brittany", 3),
-           ("tanya", "Tanya", 4), ("julian", "Julian", 5), ("aksana", "Aksana", 6), ("luiza", "Luiza", 7),
+           ("tanya", "Tanya", 4), ("julian", "Julian", 5), ("maya", "Maya", 6), ("luiza", "Luiza", 7),
            ("madeline", "Madeline", 8)]
 LIME, CREAM = (200, 214, 85), (254, 244, 226)
 
@@ -60,3 +60,23 @@ if "og:title" not in root:
             f'<meta property="og:image" content="{BASE}/assets/og/default.png">\n<meta name="twitter:card" content="summary_large_image">\n')
     root = root.replace("<title>Menu</title>", "<title>Menu</title>\n" + meta.rstrip("\n"))
     open("index.html", "w", encoding="utf-8").write(root)
+
+# Links viejos que redirigen al nuevo (carpeta vieja -> carpeta nueva)
+REDIRECTS = {"aksana": "maya"}
+names = {slug: name for slug, name, _ in CLIENTS}
+for old, new in REDIRECTS.items():
+    title = html.escape(f"Menu - {names[new]}")
+    target = f"{BASE}/{new}/"
+    os.makedirs(old, exist_ok=True)
+    open(f"{old}/index.html", "w", encoding="utf-8").write(f"""<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>{title}</title>
+<meta http-equiv="refresh" content="0; url=../{new}/"><link rel="canonical" href="{target}">
+<meta property="og:type" content="website"><meta property="og:site_name" content="Patricia Ysabella">
+<meta property="og:title" content="{title}"><meta property="og:description" content="Weekly menu">
+<meta property="og:url" content="{target}"><meta property="og:image" content="{BASE}/assets/og/{new}.png">
+<meta name="twitter:card" content="summary_large_image">
+<script>location.replace("../{new}/" + location.search);</script></head>
+<body><p><a href="../{new}/">Continue to {names[new]}'s menu</a></p></body></html>
+""")
+    print("redirect", old, "->", new)
