@@ -139,7 +139,17 @@
   }
 
   // "$1.00" / "4.0" -> "1" / "4" (la celda de semana a veces tiene formato de moneda)
-  function weekNum(v) { return String(v || "").trim().replace(/^\$/, "").replace(/\.0+$/, ""); }
+  // Dos o más semanas ("5 y 6", "5, 6", "5 & 6", "5-6", "5/6") -> "5 and 6"
+  function weekNum(v) {
+    var s = String(v || "").trim().replace(/^\$/, "").replace(/(\d)\.0+\b/g, "$1");
+    var nums = s.match(/\d+/g);
+    if (nums && nums.length > 1) {
+      return nums.length === 2 ? nums.join(" and ") : nums.slice(0, -1).join(", ") + " and " + nums[nums.length - 1];
+    }
+    return s;
+  }
+  // "5" -> "Week 5"; "5 and 6" -> "Weeks 5 and 6"
+  function weekLabel(w) { return (/\d+\D+\d+/.test(w) ? "Weeks " : "Week ") + w; }
 
   function money(v) { var n = parseFloat(String(v || "").replace(/[^0-9.\-]/g, "")); return isNaN(n) ? null : n; }
   function usd(n) { return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -182,7 +192,7 @@
     if ($("paybox")) $("paybox").hidden = paid;
     $("invoice-lines").innerHTML = lines.map(function (l) {
       var w = l.week || (l.wkKey && wk[l.wkKey]) || "";
-      return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">Week ' + esc(w) + '</span>' : "") + (l.note ? '<span class="svc-note">' + esc(l.note) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
+      return '<li><span class="dish">' + esc(l.label) + (w ? ' <span class="day">' + esc(weekLabel(w)) + '</span>' : "") + (l.note ? '<span class="svc-note">' + esc(l.note) + '</span>' : "") + '</span><span class="amt">' + usd(l.amt) + '</span></li>';
     }).join("");
     $("invoice-total").textContent = usd(total);
     window.__invoice = { name: $("client").textContent, week: invWeek, due: due, paid: paid, total: total,
@@ -218,7 +228,7 @@
       '<p class="eyebrow">' + (inv.week ? "Week of " + esc(inv.week) : "Invoice") + '</p><h1>' + esc(inv.name) + '</h1></div></section>' +
       '<div class="paper"><h2>' + (inv.paid ? "Receipt" : "Invoice") + '<span class="dot">.</span></h2>' + (inv.paid ? '<p class="due">Payment received</p>' : inv.due ? '<p class="due">Payment due ' + esc(inv.due) + '</p>' : "") + '<ul class="menu bill">' +
       inv.lines.map(function (l) {
-        return '<li><span class="dish">' + esc(l.label) + (l.week ? ' <span class="day">Week ' + esc(l.week) + '</span>' : "") +
+        return '<li><span class="dish">' + esc(l.label) + (l.week ? ' <span class="day">' + esc(weekLabel(l.week)) + '</span>' : "") +
           (l.note ? '<span class="svc-note">' + esc(l.note) + '</span>' : "") +
           '</span><span class="amt">' + usd(l.amt) + '</span></li>';
       }).join("") + '</ul><p class="total"><span>' + (inv.paid ? "Total paid" : "Total") + '</span><strong>' + usd(inv.total) + '</strong></p>' +
