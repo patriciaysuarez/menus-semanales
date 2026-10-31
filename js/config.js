@@ -6,7 +6,8 @@
 //   Solo se usa el bloque de arriba; las semanas anteriores más abajo se ignoran.
 window.CONFIG = {
   sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=717356759",  // vacío = datos de demostración
-  // Pestaña "Invoices": filas 7 a 13, misma columna que el menú del cliente.
+  // Pestaña "Invoices": fila 1 = nombres y "Week of …"; filas 2 a 13 = Week Number, Service Fee, Grocery…, Add-Ons…, Due Date, Paid button.
+  // Misma columna que el menú del cliente.
   invoicesCsvUrl: "https://docs.google.com/spreadsheets/d/1q1VOhceXykHhoXB0jKa0iS69VZScwcsRAcLXpkRCm4U/gviz/tq?tqx=out:csv&gid=1243489383",
   // Pestañas de clientes con entregas: "Freshly Delivered Clients" y "Perfectly Portioned Clients".
   // Fila 1 = nombre (columnas B a D); la columna A marca "First Delivery" / "Second Delivery" y cada marca vale hasta la siguiente.
@@ -24,7 +25,7 @@ window.CONFIG = {
   serviceNotes: {
     8: "Five to six portioned meals, delivered once a week."
   },
-  invoiceFirstRow: 7,
+  invoiceFirstRow: 2,
   invoiceLastRow: 13,
   payments: [
     { name: "Zelle", handle: "786-473-8009" },

@@ -149,8 +149,8 @@
     var label = function (r) { return ((inv[r - 1] || [])[0] || "").trim(); };
     var key = function (r) { return label(r).toLowerCase().replace(/[^a-z]/g, ""); };
     var lines = [], wk = {}, svcWeek = "", invWeek = "", paidRow = false, paidVal = "", dueVal = "";
-    // Encabezado de la factura: "Week of …" y "Week Number" (semana del servicio) arriba de la fila 7
-    for (var h = 1; h < C.invoiceFirstRow; h++) {
+    // Encabezado de la factura: "Week of …" y "Week Number" (semana del servicio); si hay varias, vale la última
+    for (var h = 1; h <= C.invoiceLastRow; h++) {
       if (/^weekof/.test(key(h))) invWeek = label(h).replace(/^week of\s*/i, "");
       if (key(h) === "weeknumber" && cell(h)) svcWeek = weekNum(cell(h));
     }
@@ -158,6 +158,7 @@
       var k = key(r), v = cell(r);
       if (/^(amount)?paid(button|status|\?)?$/.test(k)) { paidRow = true; paidVal = v; continue; }
       if (/^(payment)?due(date)?$/.test(k)) { dueVal = v; continue; }
+      if (k === "weeknumber" || /^weekof/.test(k)) continue;   // ya leídos arriba; no son montos
       if (!k || !v) continue;
       if (k === "groceryweeknumber" || k === "groceryweek") wk.grocery = weekNum(v);
       else if (k === "addonsweek" || k === "addons" || k === "addonsweeknumber") wk.addons = weekNum(v);
