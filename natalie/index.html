@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Menu - Natalie</title>
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Patricia Ysabella">
+<meta property="og:title" content="Menu - Natalie">
+<meta property="og:description" content="Weekly menu">
+<meta property="og:url" content="https://patriciaysuarez.github.io/menus-semanales/natalie/">
+<meta property="og:image" content="https://patriciaysuarez.github.io/menus-semanales/assets/og/natalie.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Menu - Natalie">
+<meta name="twitter:image" content="https://patriciaysuarez.github.io/menus-semanales/assets/og/natalie.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+<section class="hero">
+  <p class="brand">Patricia Ysabella</p>
+  <div class="hero-text">
+    <p class="eyebrow" id="week">&nbsp;</p>
+    <h1 id="client">Menu</h1>
+  </div>
+</section>
+<main class="paper">
+  <h2>Menu<span class="dot">.</span></h2>
+  <ol class="menu" id="menu" aria-live="polite">
+    <li class="loading">Loading menu…</li>
+  </ol>
+  <section id="invoice" class="invoice" hidden>
+    <p class="eyebrow-sm" id="invoice-week"></p>
+    <h2><span id="invoice-title">Amount due</span><span class="dot">.</span></h2>
+    <p class="due" id="invoice-due"></p>
+    <ul class="menu bill" id="invoice-lines"></ul>
+    <p class="total"><span id="total-label">Total</span><strong id="invoice-total"></strong></p>
+    <div class="paybox" id="paybox">
+      <p class="paybox-title">How to pay</p>
+      <ul class="pay" id="pay-list"></ul>
+      <p class="paybox-note">Please include your name and the week in the payment note.</p>
+    </div>
+    <button type="button" class="dl" id="download-pdf">Download invoice (PDF)</button>
+  </section>
+  <section id="reheating" class="reheating">
+    <h2>Reheating<span class="dot">.</span></h2>
+    <div class="acc">
+      <details><summary>Soups</summary><div class="acc-body">
+        <p><b>Stove:</b> Warm over low heat, stirring occasionally, until hot (about 4–8 minutes).</p>
+        <p>If it thickened, add a splash of water or stock.</p></div></details>
+      <details><summary>Grains</summary><div class="acc-body">
+        <p>Cover with a damp paper towel and microwave 1–2 minutes. Fluff with a fork. Or warm in a skillet, covered, over low heat with a splash of water or oil.</p></div></details>
+      <details><summary>Green salads</summary><div class="acc-body">
+        <p>Serve cold. Shake dressing before serving.</p></div></details>
+      <details><summary>Grain &amp; Noodle Salads</summary><div class="acc-body">
+        <p>Eat at room temperature or slightly heated through.</p></div></details>
+      <details><summary>Vegetables</summary><div class="acc-body">
+        <p><b>Oven or air fryer:</b> 375–400°F for 8–12 minutes for crisp edges.</p></div></details>
+      <details><summary>Meat, Poultry &amp; Fish</summary><div class="acc-body">
+        <p><b>Oven:</b> Heat covered at 325–350°F for 10–15 minutes.</p>
+        <p><b>Microwave:</b> Heat in short intervals to avoid drying.</p>
+        <p><b>Fish:</b> Heat in 30 second intervals, or just until warmed through. Warm sauces separately and pour over.</p></div></details>
+      <details><summary>Pasta</summary><div class="acc-body">
+        <p><b>Skillet:</b> Heat on medium-low with a splash of water or sauce, stirring until hot.</p>
+        <p><b>Microwave:</b> Heat covered, with a spoonful of water for 1–2 minutes, stirring halfway.</p>
+        <p><b>Baked pasta:</b> Heat covered with foil at 350°F for 15–20 minutes.</p></div></details>
+    </div>
+  </section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>window.CLIENT_COL = 9;</script>
+<script src="../js/config.js"></script>
+<script src="../js/menu.js"></script>
+</body>
+</html>

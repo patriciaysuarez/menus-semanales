@@ -9,7 +9,7 @@ BASE = "https://patriciaysuarez.github.io/menus-semanales"
 # (carpeta, nombre visible, columna del Sheet: 1 = B, 2 = C, ...)
 CLIENTS = [("mia", "Mia", 1), ("senia-sean", "Senia & Sean", 2), ("brittany", "Brittany", 3),
            ("tanya", "Tanya", 4), ("julian", "Julian", 5), ("maya", "Maya", 6), ("luiza", "Luiza", 7),
-           ("madeline", "Madeline", 8)]
+           ("madeline", "Madeline", 8), ("natalie", "Natalie", 9)]
 LIME, CREAM = (200, 214, 85), (254, 244, 226)
 
 def og_image(slug, name):
