@@ -57,6 +57,8 @@
       if (v && !/^n\/?a$/i.test(v)) items.push({ text: v, label: cell(r, 0) });
     }
     var sections = deliverySections(deliv || [], name);
+    // Si la pestaña de entregas no trae platillos para este cliente, se usa su columna del menú principal
+    if (sections && !sections.some(function (s) { return s.list.length; })) sections = null;
     if (sections) items = [].concat.apply([], sections.map(function (s) { return s.list; }));
     renderInvoice(inv || [], col);
     var row = function (it, n) {

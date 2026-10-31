@@ -28,7 +28,19 @@ def og_image(slug, name):
     os.makedirs("assets/og", exist_ok=True)
     img.save(f"assets/og/{slug}.png", optimize=True)
 
+import hashlib, re
+# Versión del sitio: cambia cuando cambia algún archivo de js/ o css/, para que los navegadores descarguen la copia nueva
+_h = hashlib.md5()
+for _f in ("js/menu.js", "js/config.js", "css/styles.css"):
+    _h.update(open(_f, "rb").read())
+VER = _h.hexdigest()[:8]
+def versioned(text):
+    text = re.sub(r'((?:href|src)="[^"]*(?:js|css)/[A-Za-z.]+\.(?:js|css))(?:\?v=\w+)?"', r'\1?v=' + VER + '"', text)
+    return text
+
 src = open("index.html", encoding="utf-8").read()
+src = versioned(src)
+open("index.html", "w", encoding="utf-8").write(src)
 # la plantilla (index.html) ya trae la vista previa genérica: se quita para que cada página de cliente tenga solo la suya
 src = "\n".join(l for l in src.split("\n") if not (l.startswith("<meta property=\"og:") or l.startswith("<meta name=\"twitter:")))
 for slug, name, col in CLIENTS:
@@ -47,8 +59,9 @@ for slug, name, col in CLIENTS:
             f'<meta name="twitter:image" content="{BASE}/assets/og/{slug}.png">\n')
     page = src.replace('href="css/', 'href="../css/').replace('src="js/', 'src="../js/')
     page = page.replace('<title>Menu</title>', f'<title>{title}</title>\n{meta}'.rstrip("\n"))
-    page = page.replace('<script src="../js/config.js"></script>',
-        f'<script>window.CLIENT_COL = {col};</script>\n<script src="../js/config.js"></script>')
+    page, n_sub = re.subn(r'(<script src="\.\./js/config\.js[^"]*"></script>)',
+        lambda m: f'<script>window.CLIENT_COL = {col};</script>\n' + m.group(1), page, count=1)
+    assert n_sub == 1, f"no se pudo insertar CLIENT_COL en {slug}"
     os.makedirs(slug, exist_ok=True)
     open(f"{slug}/index.html", "w", encoding="utf-8").write(page)
     print("ok", slug)
