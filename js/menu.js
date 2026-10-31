@@ -141,7 +141,10 @@
   // "$1.00" / "4.0" -> "1" / "4" (la celda de semana a veces tiene formato de moneda)
   // Dos o más semanas ("5 y 6", "5, 6", "5 & 6", "5-6", "5/6") -> "5 and 6"
   function weekNum(v) {
-    var s = String(v || "").trim().replace(/^\$/, "").replace(/(\d)\.0+\b/g, "$1");
+    var words = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
+                  uno: 1, dos: 2, tres: 3, cuatro: 4, cinco: 5, seis: 6, siete: 7, ocho: 8, nueve: 9, diez: 10 };
+    var s = String(v || "").trim().replace(/^\$/, "").replace(/(\d)\.0+\b/g, "$1")
+      .replace(/[A-Za-z]+/g, function (w) { return words.hasOwnProperty(w.toLowerCase()) ? words[w.toLowerCase()] : w; });
     var nums = s.match(/\d+/g);
     if (nums && nums.length > 1) {
       return nums.length === 2 ? nums.join(" and ") : nums.slice(0, -1).join(", ") + " and " + nums[nums.length - 1];
